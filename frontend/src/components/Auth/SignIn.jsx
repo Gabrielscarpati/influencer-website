@@ -15,7 +15,7 @@ const SignIn = ({ onSignInSuccess, onGoToSignUp }) => {
       const { data, error } = await api.signIn(email, password);
       if (error) throw error;
       const { session, user } = data;
-      onSignInSuccess({ email: user.email, token: session.access_token });
+      onSignInSuccess({ id: user.id, email: user.email, token: session.access_token });
     } catch (err) {
       setError(err.message);
     }

@@ -20,6 +20,9 @@ const SignUp = ({ onSignUpSuccess, onGoBack, profileData }) => {
   const [agreedToSharing, setAgreedToSharing] = useState(false);
   const [error, setError] = useState(null);
 
+  // Consider the form complete when email, password, date of birth, and all three consents are provided
+  const isFormComplete = email && password && dob && agreedToTerms && agreedToConsent && agreedToSharing;
+
   const handleSignUp = async () => {
     setError(null);
     if (!dob) {
@@ -28,6 +31,14 @@ const SignUp = ({ onSignUpSuccess, onGoBack, profileData }) => {
     }
     if (!agreedToTerms) {
       setError('You must agree to the Terms & Conditions.');
+      return;
+    }
+    if (!agreedToConsent) {
+      setError('You must consent to processing your information.');
+      return;
+    }
+    if (!agreedToSharing) {
+      setError('You must consent to sharing your information.');
       return;
     }
     const birthDate = new Date(dob);
@@ -51,7 +62,7 @@ const SignUp = ({ onSignUpSuccess, onGoBack, profileData }) => {
       if (error) throw error;
       
       const { session, user } = data;
-      onSignUpSuccess({ email: user.email, token: session.access_token });
+      onSignUpSuccess({ id: user.id, email: user.email, token: session.access_token });
     } catch (err) {
       setError(err.message);
     }
@@ -128,7 +139,8 @@ const SignUp = ({ onSignUpSuccess, onGoBack, profileData }) => {
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <Button
           onClick={handleSignUp}
-          className="w-full p-3 rounded-lg bg-gray-600 hover:bg-gray-700 text-white font-bold"
+          disabled={!isFormComplete}
+          className={`w-full p-3 rounded-lg ${isFormComplete ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 hover:bg-gray-700'} text-white font-bold`}
         >
           Create Account
         </Button>
